@@ -18,7 +18,7 @@ struct Math {
 		return ((a % MOD) * (b % MOD)) % MOD;
 	}
 	ll sub(ll a, ll b){
-		return (a + b + MOD) % MOD;
+		return (a - b + MOD) % MOD;
 	}
 	ll pow(ll a, ll b){
 		ll cur = 1;
