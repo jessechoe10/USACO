@@ -197,11 +197,11 @@ bool works(ll x){
 
 ll minBS(ll l, ll h){
 	ll ans = h;
-	while(l <= r){
-		ll m = l + (r - l) / 2;
+	while(l <= h){
+		ll m = l + (h - l) / 2;
 		if(works(m)){
 			ans = m;
-			r = m - 1;
+			h = m - 1;
 		} else {
 			l = m + 1;
 		}
@@ -211,13 +211,13 @@ ll minBS(ll l, ll h){
 
 ll maxBS(ll l, ll h){
 	ll ans = l;
-	while(l <= r){
-		ll m = l + (r - l) / 2;
+	while(l <= h){
+		ll m = l + (h - l) / 2;
 		if(works(m)){
 			ans = m;
 			l = m + 1;
 		} else {
-			r = m - 1;
+			h = m - 1;
 		}
 	}
 	return ans;
