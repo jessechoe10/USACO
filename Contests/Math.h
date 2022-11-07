@@ -1,5 +1,5 @@
 struct Math {
-	ll MOD, MAXN; vl fact;
+	ll MOD, MAXN; vl fact, ifact;
 	Math(){
 		this -> MOD = 1e9 + 7;
 		this -> MAXN = 2e5;
@@ -32,14 +32,17 @@ struct Math {
 		return mult(a, pow(b, MOD - 2));
 	}
 	void genFact(){
-		fact.pb(1);
-		FOR(i, 1, MAXN + 1) fact.pb(fact.back() * i);
+		fact.pb(1); ifact.pb(1);
+		FOR(i, 1, MAXN + 1){ 
+			fact.pb(mult(fact.back(), i));
+			ifact.pb(pow(fact[i], MOD - 2));
+		}
 	}
 	ll factorial(ll n){
 		return fact[n];
 	}
 	ll choose(ll a, ll b){
-		return mult(div(factorial(a), factorial(b)), div(1LL, factorial(a - b)));
+		return mult(mult(ifact[b], ifact[a - b]), fact[a]);
 	}
 	ll gcd(ll a, ll b){
 		return __gcd(a, b);
