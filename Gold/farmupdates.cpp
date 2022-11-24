@@ -7,76 +7,67 @@ using pl = pair<ll, ll>;
 using vpl = vector<pl>;
 
 #define forn(i, n) for(ll i = 0; i < n; i++)
-#define FOR(i, a, b) for(ll i = a; i < b; i++)
 #define rofn(i, n) for(ll i = n; i >= 0; i--)
-#define ROF(i, a, b) for(ll i = a; i >= b; i--)
+#define FOR(i, a, b) for(ll i = a; i < b; i++)
+#define all(x) begin(x), end(x)
+#define sor(x) sort(all(x))
+#define pb push_back
 #define f first
 #define s second
-#define pb push_back
-#define all(x) begin(x), end(x)
+#define mp make_pair
 
-typedef pair<pl, ll> Q;
+const ll MAXN = 1e5;
+bool relevant[MAXN];
+ll ans[MAXN]; vl adj[MAXN];
 
-const ll MAXN = 2e5 + 5;
-
-ll ans[MAXN], deactive[MAXN], rem[MAXN];
-bool active[MAXN], works[MAXN];
-vl adj[MAXN];
-
-void dfs(ll a, ll q){
-	if(ans[a] == 0){
-		ans[a] = q;
-		for(ll u: adj[a]){
-			dfs(u, q);
-		}
+void activate(ll u, ll q){
+	if(relevant[u]) return;
+	relevant[u] = true;
+	ans[u] = max(ans[u], q);
+	for(ll v: adj[u]){
+		activate(v, q);
 	}
 }
 
 int main(){
-	ll n, q; cin >> n >> q; vpl edges; 
-	forn(i, MAXN){
-		active[i] = true, works[i] = true;
-		deactive[i] = -1, rem[i] = -1;
-	}
+	ll n, q; cin >> n >> q;
+	vpl edges; vl bad_edge(q), q1(q, -1), q2(q, -1);
+	forn(i, n) relevant[i] = 1;
 	forn(i, q){
 		char c; cin >> c;
 		if(c == 'A'){
-			ll x, y; cin >> x >> y;
-			edges.pb({x, y});
+			ll x, y; cin >> x >> y; --x, --y;
+			edges.pb(mp(x, y));
 		} else if(c == 'D'){
-			ll v; cin >> v;
-			active[v] = 0;
-			deactive[i] = v;
+			ll x; cin >> x; --x, relevant[x] = 0, q1[i] = x;
 		} else {
-			ll v; cin >> v;
-			rem[i] = v - 1;
-			works[v - 1] = 0;
+			ll e; cin >> e; --e, bad_edge[e] = 1, q2[i] = e;
 		}
 	}
 	forn(i, edges.size()){
-		if(works[i]){
-			adj[edges[i].f].pb(edges[i].s);
-			adj[edges[i].s].pb(edges[i].f);
-		}
-	}
-	FOR(i, 1, n + 1){
-		if(active[i]){
-			dfs(i, q);
-		}
-	}
-	rofn(i, q - 1){
-		if(deactive[i] != -1){
-			dfs(deactive[i], i);
-		} 
-		if(rem[i] != -1){
-			ll a = edges[rem[i]].f, b = edges[rem[i]].s;
+		if(!bad_edge[i]){
+			ll a = edges[i].f, b = edges[i].s;
 			adj[a].pb(b), adj[b].pb(a);
-			if(ans[a] != 0 || ans[b] != 0){
-				dfs(a, i); dfs(b, i);
+			if(relevant[a] || relevant[b]){
+				activate(a, n); activate(b, n);
 			}
 		}
 	}
-	FOR(i, 1, n + 1){
+	forn(i, n){
+		if(relevant[i]) ans[i] = q;
+	}
+	rofn(i, q - 1){
+		if(q1[i] != -1){
+			activate(q1[i], i);	
+		} else if(q2[i] != -1){
+			ll a = edges[q2[i]].f, b = edges[q2[i]].s;
+			adj[a].pb(b), adj[b].pb(a);
+			if(relevant[a] || relevant[b]){
+				activate(a, i); activate(b, i);
+			}
+		}
+	}
+	forn(i, n){
 		cout << ans[i] << endl;
 	}
 }
